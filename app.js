@@ -1,6 +1,6 @@
 var express = require('express');
 var path = require('path');
-// var bodyParser = require('body-parser');
+var bodyParser = require('body-parser');
 var mockApi = require('./mock');
 var app = express();
 
@@ -10,7 +10,7 @@ app.set('view engine','jade')
 
 app.use(express.static(path.join(__dirname, 'public')))
 // 处理 http 请求
-// app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 
 app.use('/',mockApi)

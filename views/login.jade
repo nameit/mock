@@ -11,19 +11,62 @@ html
     script(src="js/jquery.js")
     script.
         $("#submit").click(function() {
-            //- var newdata = new FormData($("#login")[0]);
-            //- console.log(newdata)
 
             var xhr = new XMLHttpRequest()
             xhr.onload = function () {
+            //  浏览器接受到服务器的响应之后的操作
                 if (xhr.status >= 200 && xhr.status < 300) {
                     var res = JSON.parse(xhr.response);
                     if (res.success) {
-                      alert(2)
+                      alert('欢迎你！'+res.name)
+                    } else {
+                        alert(res.msg)
                     }
-                  }
+                }
             }
+
+            // 初始化请求数据对象
+            var objj = {}
+            var username = $('input[name=username]').val();
+            var password = $('input[name=password]').val();
+            objj.username = username;
+            objj.password = password;
+
+            // 序列化对象为query形式的键值对
+            function serialize (obj) {
+                var query = '', name, value, fullSubName, subName, subValue, innerObj, i;
+
+              for (name in obj) {
+                value = obj[name];
+
+                if (value instanceof Array) {
+                  for (i = 0; i < value.length; ++i) {
+                    subValue = value[i];
+                    fullSubName = name + '[' + i + ']';
+                    innerObj = {};
+                    innerObj[fullSubName] = subValue;
+                    query += param(innerObj) + '&';
+                  }
+                }
+                else if (value instanceof Object) {
+                  for (subName in value) {
+                    subValue = value[subName];
+                    fullSubName = name + '[' + subName + ']';
+                    innerObj = {};
+                    innerObj[fullSubName] = subValue;
+                    query += serialize(innerObj) + '&';
+                  }
+                }
+                else if (value !== undefined && value !== null)
+                  query += encodeURIComponent(name) + '=' + encodeURIComponent(value) + '&';
+              }
+
+              return query.length ? query.substr(0, query.length - 1) : query;
+            }
+
+            // 发送post请求
             xhr.open('post','/aa');
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
-            xhr.send()
+            // 发送数据send，服务器用body取数据，如果放入上面open方法里的/aa的后面用“/aa?serialize(objj)” 这样的形式，服务器用query取数据。
+            xhr.send(serialize(objj))
         })
